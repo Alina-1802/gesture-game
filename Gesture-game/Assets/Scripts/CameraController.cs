@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
         import UnityEngine;
         UnityEngine.Debug.Log('hello world')
         ");
-        PythonRunner.RunFile("Assets\\Scripts\\face_position_recognition.py");
+        //PythonRunner.RunFile("Assets\\Scripts\\face_position_recognition.py");
 }
 
     // Update is called once per frame
