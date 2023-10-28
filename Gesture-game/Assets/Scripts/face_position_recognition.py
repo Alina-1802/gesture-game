@@ -6,8 +6,13 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 import numpy as np
 import matplotlib.pyplot as plt
-import UnityEngine as ue
+import socket
+import time
 
+host, port = "127.0.0.1", 25001
+data = "1,2,3"
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def draw_landmarks_on_image(rgb_image, detection_result):
     face_landmarks_list = detection_result.face_landmarks
@@ -83,6 +88,7 @@ with FaceLandmarker.create_from_options(options) as landmarker:
     frameWidth = videoDevice.get(cv2.CAP_PROP_FRAME_WIDTH)
     frameHeight = videoDevice.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
+    sock.connect((host, port))
     # Create a loop to read the latest frame from the camera using VideoCapture#read()
     frame_timestamp_ms = 0
     while videoDevice.isOpened():
@@ -100,7 +106,6 @@ with FaceLandmarker.create_from_options(options) as landmarker:
         frame_timestamp_ms = frame_timestamp_ms + 40
 
         landmarker.detect_async(mp_image, frame_timestamp_ms)
-
         if detection_result_available == True:
             annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), detection_result)
             if len(detection_result.face_landmarks) > 0:
@@ -134,23 +139,18 @@ with FaceLandmarker.create_from_options(options) as landmarker:
                     round(detection_result.face_landmarks[0][291].x * frameWidth),
                     round(detection_result.face_landmarks[0][291].y * frameHeight)), 5, (255, 0, 0), 2)
                 semaphore = False
+
                 cv2.imshow('Frame', annotated_image)
 
-                # moj kod
-                if (detection_result.face_landmarks[0][33].x >= 0.65):
-                    ue.Camera.main.transform.Translate(-1, 0, 0)
-                    # ue.Debug.Log("wykonuje sie 1")
-                elif (detection_result.face_landmarks[0][263].x <= 0.35):
-                    ue.Camera.main.transform.Translate(1, 0, 0)
-                    # ue.Debug.Log("wykonuje sie 2")
-                ue.Debug.Log("A_x = ")
-                ue.Debug.Log(detection_result.face_landmarks[0][33].x)
-                ue.Debug.Log("B_x = ")
-                ue.Debug.Log(detection_result.face_landmarks[0][263].x)
+                #P1 = "%f, %f, 0" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z)
+                dataPoints = "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z, detection_result.face_landmarks[0][263].x, detection_result.face_landmarks[0][263].y, detection_result.face_landmarks[0][263].z, detection_result.face_landmarks[0][61].x, detection_result.face_landmarks[0][61].y, detection_result.face_landmarks[0][61].z, detection_result.face_landmarks[0][291].x, detection_result.face_landmarks[0][291].y, detection_result.face_landmarks[0][291].z)
+                #print(data)
+                sock.sendall(dataPoints.encode("utf-8"))
 
-            #ue.Render
+
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
+    sock.close()
     videoDevice.release()
     cv2.destroyAllWindows()

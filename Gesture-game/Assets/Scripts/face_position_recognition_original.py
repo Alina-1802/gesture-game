@@ -6,8 +6,6 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 import numpy as np
 import matplotlib.pyplot as plt
-import UnityEngine as ue
-
 
 def draw_landmarks_on_image(rgb_image, detection_result):
     face_landmarks_list = detection_result.face_landmarks
@@ -135,18 +133,6 @@ with FaceLandmarker.create_from_options(options) as landmarker:
                     round(detection_result.face_landmarks[0][291].y * frameHeight)), 5, (255, 0, 0), 2)
                 semaphore = False
                 cv2.imshow('Frame', annotated_image)
-
-                # moj kod
-                if (detection_result.face_landmarks[0][33].x >= 0.65):
-                    ue.Camera.main.transform.Translate(-1, 0, 0)
-                    # ue.Debug.Log("wykonuje sie 1")
-                elif (detection_result.face_landmarks[0][263].x <= 0.35):
-                    ue.Camera.main.transform.Translate(1, 0, 0)
-                    # ue.Debug.Log("wykonuje sie 2")
-                ue.Debug.Log("A_x = ")
-                ue.Debug.Log(detection_result.face_landmarks[0][33].x)
-                ue.Debug.Log("B_x = ")
-                ue.Debug.Log(detection_result.face_landmarks[0][263].x)
 
             #ue.Render
             if cv2.waitKey(5) & 0xFF == 27:
