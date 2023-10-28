@@ -112,5 +112,24 @@ public class CameraController : MonoBehaviour
         Vector3 B = Points[1];
         Vector3 C = Points[2];
         Vector3 D = Points[3];
+
+        //calculate focal length
+        Vector3 focalLength = (A + B) / 2f;
+
+        //calculate direction of the optical axis
+        Vector3 opticalAxisDirection = CalculateOpticalAxisDirection(A, B, C, D);
+        Vector3 temp = opticalAxisDirection;
+        temp.x = -temp.x; //to rotate properly
+
+        //set rotation
+        Quaternion rotation = Quaternion.LookRotation(temp);
+        transform.rotation = rotation;
+
+        //set position
+        Vector3 position = focalLength;
+        position.x *= 10;
+        position.y *= 10;
+        position.z *= -100;
+        transform.position = position;
     }
 }
