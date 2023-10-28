@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 public class CameraController : MonoBehaviour
 {
@@ -84,13 +85,32 @@ public class CameraController : MonoBehaviour
         return result;
     }
 
+    Vector3 CalculateOpticalAxisDirection(Vector3 A, Vector3 B, Vector3 C, Vector3 D)
+    {
+        Vector3 E = (C + D) / 2f;
+        Vector3 AB = B - A;
+        Vector3 AE = E - A;
+
+        float a1 = AB.x;
+        float a2 = AB.y;
+        float a3 = AB.z;
+
+        float b1 = AE.x;
+        float b2 = AE.y;
+        float b3 = AE.z;
+
+        float c1 = a2 * b3 - a3 * b2;
+        float c2 = a3 * b1 - a1 * b3;
+        float c3 = a1 * b2 - a2 - b1;
+
+        return new Vector3(c1, c2, c3);
+    }
+
     void Update()
     {
         Vector3 A = Points[0];
         Vector3 B = Points[1];
         Vector3 C = Points[2];
         Vector3 D = Points[3];
-
-        Vector3 E = new Vector3((C.x + D.x) / 2.0f, (C.y + D.y) / 2.0f, (C.z + D.z) / 2.0f);
     }
 }

@@ -144,7 +144,7 @@ with FaceLandmarker.create_from_options(options) as landmarker:
 
                 #P1 = "%f, %f, 0" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z)
                 dataPoints = "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z, detection_result.face_landmarks[0][263].x, detection_result.face_landmarks[0][263].y, detection_result.face_landmarks[0][263].z, detection_result.face_landmarks[0][61].x, detection_result.face_landmarks[0][61].y, detection_result.face_landmarks[0][61].z, detection_result.face_landmarks[0][291].x, detection_result.face_landmarks[0][291].y, detection_result.face_landmarks[0][291].z)
-                #print(data)
+                #print(dataPoints)
                 sock.sendall(dataPoints.encode("utf-8"))
 
 
