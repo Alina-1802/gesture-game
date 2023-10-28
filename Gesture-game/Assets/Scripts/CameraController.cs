@@ -86,10 +86,11 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-
         Vector3 A = Points[0];
         Vector3 B = Points[1];
         Vector3 C = Points[2];
         Vector3 D = Points[3];
+
+        Vector3 E = new Vector3((C.x + D.x) / 2.0f, (C.y + D.y) / 2.0f, (C.z + D.z) / 2.0f);
     }
 }
