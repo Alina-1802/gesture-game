@@ -10,15 +10,12 @@ import socket
 import time
 
 host, port = "127.0.0.1", 25001
-data = "1,2,3"
-
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def draw_landmarks_on_image(rgb_image, detection_result):
     face_landmarks_list = detection_result.face_landmarks
     annotated_image = np.copy(rgb_image)
 
-    # Loop through the detected faces to visualize.
     for idx in range(len(face_landmarks_list)):
         face_landmarks = face_landmarks_list[idx]
 
@@ -65,7 +62,6 @@ detection_result = object()
 semaphore = False
 
 
-# Create a face landmarker instance with the live stream mode:
 def show_result(result: FaceLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
     global detection_result
     global detection_result_available
@@ -80,29 +76,18 @@ options = FaceLandmarkerOptions(
     result_callback=show_result)
 
 with FaceLandmarker.create_from_options(options) as landmarker:
-    # The landmarker is initialized. Use it here.
-    # ...
-
-    # Use OpenCV’s VideoCapture to start capturing from the webcam.
     videoDevice = cv2.VideoCapture(0)
     frameWidth = videoDevice.get(cv2.CAP_PROP_FRAME_WIDTH)
     frameHeight = videoDevice.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
     sock.connect((host, port))
-    # Create a loop to read the latest frame from the camera using VideoCapture#read()
+
     frame_timestamp_ms = 0
     while videoDevice.isOpened():
         frame = videoDevice.read()[1]
 
-        # Convert the frame received from OpenCV to a MediaPipe’s Image object.
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
-        # Send live image data to perform face landmarking.
-        # The results are accessible via the `result_callback` provided in
-        # the `FaceLandmarkerOptions` object.
-        # The face landmarker must be created with the live stream mode.
-        # frame_timestamp_ms =  #videoDevice.get(cv2.CAP_PROP_POS_MSEC)
-        # print(frame_timestamp_ms)
         frame_timestamp_ms = frame_timestamp_ms + 40
 
         landmarker.detect_async(mp_image, frame_timestamp_ms)
@@ -110,31 +95,19 @@ with FaceLandmarker.create_from_options(options) as landmarker:
             annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), detection_result)
             if len(detection_result.face_landmarks) > 0:
                 semaphore = True
-                # print('Point A:')
-                # print(detection_result.face_landmarks[0][33].x)
-                # print(detection_result.face_landmarks[0][33].y)
-                # print(detection_result.face_landmarks[0][33].z)
+                #Point A
                 annotated_image = cv2.circle(annotated_image, (
                     round(detection_result.face_landmarks[0][33].x * frameWidth),
                     round(detection_result.face_landmarks[0][33].y * frameHeight)), 5, (255, 0, 0), 2)
-                # print('Point B:')
-                # print(detection_result.face_landmarks[0][263].x)
-                # print(detection_result.face_landmarks[0][263].y)
-                # (detection_result.face_landmarks[0][263].z)
+                #Point B
                 annotated_image = cv2.circle(annotated_image, (
                     round(detection_result.face_landmarks[0][263].x * frameWidth),
                     round(detection_result.face_landmarks[0][263].y * frameHeight)), 5, (255, 0, 0), 2)
-                # print('Point C:')
-                # print(detection_result.face_landmarks[0][61].x)
-                # print(detection_result.face_landmarks[0][61].y)
-                # print(detection_result.face_landmarks[0][61].z)
+                #Point C
                 annotated_image = cv2.circle(annotated_image, (
                     round(detection_result.face_landmarks[0][61].x * frameWidth),
                     round(detection_result.face_landmarks[0][61].y * frameHeight)), 5, (255, 0, 0), 2)
-                # print('Point D:')
-                # print(detection_result.face_landmarks[0][291].x)
-                # print(detection_result.face_landmarks[0][291].y)
-                # print(detection_result.face_landmarks[0][291].z)
+                #Point D
                 annotated_image = cv2.circle(annotated_image, (
                     round(detection_result.face_landmarks[0][291].x * frameWidth),
                     round(detection_result.face_landmarks[0][291].y * frameHeight)), 5, (255, 0, 0), 2)
@@ -142,11 +115,14 @@ with FaceLandmarker.create_from_options(options) as landmarker:
 
                 cv2.imshow('Frame', annotated_image)
 
-                #P1 = "%f, %f, 0" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z)
-                dataPoints = "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f" % (detection_result.face_landmarks[0][33].x, detection_result.face_landmarks[0][33].y, detection_result.face_landmarks[0][33].z, detection_result.face_landmarks[0][263].x, detection_result.face_landmarks[0][263].y, detection_result.face_landmarks[0][263].z, detection_result.face_landmarks[0][61].x, detection_result.face_landmarks[0][61].y, detection_result.face_landmarks[0][61].z, detection_result.face_landmarks[0][291].x, detection_result.face_landmarks[0][291].y, detection_result.face_landmarks[0][291].z)
-                #print(dataPoints)
-                sock.sendall(dataPoints.encode("utf-8"))
+                z = - detection_result.face_landmarks[0][263].x + detection_result.face_landmarks[0][33].x #offset
 
+                dataPoints = f"""{detection_result.face_landmarks[0][33].x}, {detection_result.face_landmarks[0][33].y},{detection_result.face_landmarks[0][33].z + z},
+                                 {detection_result.face_landmarks[0][263].x},{detection_result.face_landmarks[0][263].y}, {detection_result.face_landmarks[0][263].z + z},
+                                 {detection_result.face_landmarks[0][61].x}, {detection_result.face_landmarks[0][61].y},{detection_result.face_landmarks[0][61].z + z}, 
+                                 {detection_result.face_landmarks[0][291].x},{detection_result.face_landmarks[0][291].y}, {detection_result.face_landmarks[0][291].z + z}"""
+
+                sock.sendall(dataPoints.encode("utf-8"))
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break

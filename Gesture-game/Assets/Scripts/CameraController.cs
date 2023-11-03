@@ -42,7 +42,6 @@ public class CameraController : MonoBehaviour
             Connection();
         }
         server.Stop();
-
     }
 
     void Connection()
@@ -103,7 +102,7 @@ public class CameraController : MonoBehaviour
         float c2 = a3 * b1 - a1 * b3;
         float c3 = a1 * b2 - a2 - b1;
 
-        return new Vector3(c1, c2, c3);
+        return new Vector3(-c1, c2, c3); //change coordinate system
     }
 
     void Update()
@@ -118,18 +117,20 @@ public class CameraController : MonoBehaviour
 
         //calculate direction of the optical axis
         Vector3 opticalAxisDirection = CalculateOpticalAxisDirection(A, B, C, D);
-        Vector3 temp = opticalAxisDirection;
-        temp.x = -temp.x; //to rotate properly
 
         //set rotation
-        Quaternion rotation = Quaternion.LookRotation(temp);
-        transform.rotation = rotation;
+        if(opticalAxisDirection != Vector3.zero)
+        {
+            Quaternion rotation = Quaternion.LookRotation(opticalAxisDirection);
+            transform.rotation = rotation;
+        }
 
         //set position
         Vector3 position = focalLength;
+        //scaling
         position.x *= 10;
         position.y *= 10;
-        position.z *= -100;
+        position.z *= 100;
         transform.position = position;
     }
 }
