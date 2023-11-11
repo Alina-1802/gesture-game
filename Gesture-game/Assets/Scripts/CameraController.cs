@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class CameraController : MonoBehaviour
     TcpListener server;
     TcpClient client;
     bool running;
+
+    public Transform targetObject;
+    public float maxAngle = 10f;
 
     List<Vector3> Points = new List<Vector3>
     {
@@ -132,5 +136,21 @@ public class CameraController : MonoBehaviour
         position.y *= 10;
         position.z *= 100;
         transform.position = position;
+
+        //check if camera is looking at the object
+        Vector3 directionToTarget = targetObject.position - Camera.main.transform.position;
+        float angle = Vector3.Angle(directionToTarget, Camera.main.transform.forward);
+
+        //Debug.DrawLine(transform.position, targetObject.position, Color.blue, 2.5f);
+        //Debug.DrawLine(Camera.main.transform.forward * 100, transform.position, Color.red, 2.5f);
+
+        if (angle < maxAngle)
+        {
+            Debug.Log("Object is detected");
+        }
+        else
+        {
+            Debug.Log("Object is not detected");
+        }
     }
 }
