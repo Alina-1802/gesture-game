@@ -1,48 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Gameplay : MonoBehaviour
 {
     Transform targetObject; //current
 
-    public Transform targetObject1; // AmericanGothic
-    public Transform targetObject2; // Sunflowers
+    public Transform targetObject1; // LadyWithTheErmine
+    public Transform targetObject2; // Girl with a Pearl Earring
     public Transform targetObject3; // MonaLisa
     public Transform targetObject4; // StarryNight
     public Transform targetObject5; // TheKiss
-    public Transform targetObject6; // LadyWithTheErmine
+    public Transform targetObject6; // AmericanGothic
     public Transform targetObject7; // WhistlersMother
     public Transform targetObject8; // TheYoungLadiesOfAvignon
 
-    float[] flagArray;
-    int numberDetectedPaintings;
+    int numberDetectedPaintings = 0;
     public float maxAngle = 10f;
 
     bool timeConditionMet = false;
     float detectionStartTime = 0f;
     public float requiredTime = 3f; // 3 seconds
 
-    // Start is called before the first frame update
+    public TMP_Text paintingTitle;
+
     void Start()
     {
-        flagArray = new float[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
         numberDetectedPaintings = 0;
+        paintingTitle.text = string.Empty;
     }
 
-    // Update is called once per frame
     void Update()
     {
         switch(numberDetectedPaintings)
         {
-            case 0: targetObject = targetObject1; break;
-            case 1: targetObject = targetObject2; break;
-            case 2: targetObject = targetObject3; break;
-            case 3: targetObject = targetObject4; break;
-            case 4: targetObject = targetObject5; break;
-            case 5: targetObject = targetObject6; break;
-            case 6: targetObject = targetObject7; break;
-            case 7: targetObject = targetObject8; break;      
+            case 0: targetObject = targetObject1; paintingTitle.text = "Lady with an Ermine";  break;
+            case 1: targetObject = targetObject2; paintingTitle.text = "Girl with a Pearl Earring";  break;
+            case 2: targetObject = targetObject3; paintingTitle.text = "Mona Lisa";  break;
+            case 3: targetObject = targetObject4; paintingTitle.text = "The Starry Night";  break;
+            case 4: targetObject = targetObject5; paintingTitle.text = "The Kiss";  break;
+            case 5: targetObject = targetObject6; paintingTitle.text = "American Gothic";  break;
+            case 6: targetObject = targetObject7; paintingTitle.text = "Whistler's Mother";  break;
+            case 7: targetObject = targetObject8; paintingTitle.text = "The Ladies of Avignon";  break;      
         }
 
 
@@ -64,9 +64,16 @@ public class Gameplay : MonoBehaviour
             }
             if (Time.time - detectionStartTime >= requiredTime)
             {
-                flagArray[numberDetectedPaintings] = 1;
-                numberDetectedPaintings++;
-                timeConditionMet = false;
+                if(numberDetectedPaintings < 8)
+                {
+                    numberDetectedPaintings++;
+                    timeConditionMet = false;
+                }
+                else if(numberDetectedPaintings == 8)
+                {
+                    Debug.Log("Ukoñczono level");
+                }
+
             }
 
         }
@@ -76,8 +83,6 @@ public class Gameplay : MonoBehaviour
             timeConditionMet = false;
         }
 
-        Debug.Log("american: " + flagArray[0]);
-        Debug.Log("sunflowers: " + flagArray[1]);
-        Debug.Log("mona lisa: " + flagArray[2]);
+       // Debug.Log("Liczba wykrytych obrazów: " + numberDetectedPaintings);
     }
 }
