@@ -15,6 +15,13 @@ public class CameraController : MonoBehaviour
     TcpClient client;
     bool running;
 
+    bool isDataReceived = false;
+
+    public bool IsDataReceived()
+    {
+        return isDataReceived;
+    }
+
     List<Vector3> Points = new List<Vector3>
     {
         Vector3.zero,
@@ -57,6 +64,8 @@ public class CameraController : MonoBehaviour
         {
             Points = ParseData(dataReceived);
             nwStream.Write(buffer, 0, bytesRead);
+
+            isDataReceived = true;
         }
     }
 
