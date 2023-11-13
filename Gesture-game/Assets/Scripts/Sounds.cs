@@ -16,9 +16,9 @@ public class Sounds : MonoBehaviour
     void Update()
     {
         bool isObjectDetected = mainCamera.GetComponent<Gameplay>().IsObjectDetected();
-        bool isObjectDetectedRequiredTime = mainCamera.GetComponent<Gameplay>().IsObjectDetectedRequiredTime();
+        bool isRequiredTime = mainCamera.GetComponent<Gameplay>().IsRequiredTime();
 
-        if (isObjectDetected && isObjectDetectedRequiredTime) //to poprawic
+        if (isObjectDetected && isRequiredTime) //to poprawic
         {
             GetComponentInChildren<AudioSource>().Play();
         }

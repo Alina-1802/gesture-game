@@ -20,7 +20,7 @@ public class Gameplay : MonoBehaviour
     public float maxAngle = 10f;
 
     private bool timeConditionMet = false;
-    private float detectionStartTime = 0f;
+    private float detectionStartTime;
     public float requiredTime = 3f; // 3 seconds
 
     public TMP_Text paintingTitle;
@@ -33,7 +33,7 @@ public class Gameplay : MonoBehaviour
             return false;
     }
 
-    bool IsObjectDetected()
+    public bool IsObjectDetected()
     {
         Vector3 directionToTarget = targetObject.position - Camera.main.transform.position;
         float angle = Vector3.Angle(directionToTarget, Camera.main.transform.forward);
@@ -44,7 +44,7 @@ public class Gameplay : MonoBehaviour
             return false;
     }
 
-    bool IsObjectDetectedRequiredTime()
+    public bool IsRequiredTime()
     {
         if (Time.time - detectionStartTime >= requiredTime)
         {
@@ -74,6 +74,7 @@ public class Gameplay : MonoBehaviour
         numberDetectedPaintings = 0;
         paintingTitle.text = string.Empty;
         SetCurrentTargetObject();
+        detectionStartTime = Time.time;
     }
 
     void Update()
@@ -91,7 +92,7 @@ public class Gameplay : MonoBehaviour
                 timeConditionMet = true;
             }
 
-            if (IsObjectDetectedRequiredTime())
+            if (IsRequiredTime())
             {
                 if(!IsLevelCompleted())
                 {

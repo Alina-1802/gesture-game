@@ -67,6 +67,8 @@ public class CameraController : MonoBehaviour
 
             isDataReceived = true;
         }
+        else
+            isDataReceived = false;
     }
 
     public static List<Vector3> ParseData(string dataString)
