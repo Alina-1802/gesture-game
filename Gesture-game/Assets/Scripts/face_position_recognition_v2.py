@@ -83,8 +83,6 @@ with FaceLandmarker.create_from_options(options) as landmarker:
     sock.connect((host, port))
 
     frame_timestamp_ms = 0
-
-    previous_face_detected = False
     while videoDevice.isOpened():
         frame = videoDevice.read()[1]
 
@@ -96,7 +94,6 @@ with FaceLandmarker.create_from_options(options) as landmarker:
         if detection_result_available == True:
             annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), detection_result)
             if len(detection_result.face_landmarks) > 0:
-                previous_face_detected = True
                 semaphore = True
                 #Point A
                 annotated_image = cv2.circle(annotated_image, (
@@ -115,22 +112,17 @@ with FaceLandmarker.create_from_options(options) as landmarker:
                     round(detection_result.face_landmarks[0][291].x * frameWidth),
                     round(detection_result.face_landmarks[0][291].y * frameHeight)), 5, (255, 0, 0), 2)
                 semaphore = False
-                previous_face_detected = False
 
                 cv2.imshow('Frame', annotated_image)
 
-                #if len(detection_result.face_landmarks[0]) > 263:
-                try:
-                    z = - detection_result.face_landmarks[0][263].x + detection_result.face_landmarks[0][33].x #offset
+                z = - detection_result.face_landmarks[0][263].x + detection_result.face_landmarks[0][33].x #offset
 
-                    dataPoints = f"""{detection_result.face_landmarks[0][33].x}, {detection_result.face_landmarks[0][33].y},{detection_result.face_landmarks[0][33].z + z},
-                                     {detection_result.face_landmarks[0][263].x},{detection_result.face_landmarks[0][263].y}, {detection_result.face_landmarks[0][263].z + z},
-                                     {detection_result.face_landmarks[0][61].x}, {detection_result.face_landmarks[0][61].y},{detection_result.face_landmarks[0][61].z + z}, 
-                                     {detection_result.face_landmarks[0][291].x},{detection_result.face_landmarks[0][291].y}, {detection_result.face_landmarks[0][291].z + z}"""
-                    sock.sendall(dataPoints.encode("utf-8"))
+                dataPoints = f"""{detection_result.face_landmarks[0][33].x}, {detection_result.face_landmarks[0][33].y},{detection_result.face_landmarks[0][33].z + z},
+                                 {detection_result.face_landmarks[0][263].x},{detection_result.face_landmarks[0][263].y}, {detection_result.face_landmarks[0][263].z + z},
+                                 {detection_result.face_landmarks[0][61].x}, {detection_result.face_landmarks[0][61].y},{detection_result.face_landmarks[0][61].z + z}, 
+                                 {detection_result.face_landmarks[0][291].x},{detection_result.face_landmarks[0][291].y}, {detection_result.face_landmarks[0][291].z + z}"""
 
-                except IndexError:
-                    pass
+                sock.sendall(dataPoints.encode("utf-8"))
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break
