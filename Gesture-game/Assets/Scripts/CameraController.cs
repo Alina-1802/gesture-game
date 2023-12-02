@@ -67,8 +67,8 @@ public class CameraController : MonoBehaviour
 
             isDataReceived = true;
         }
-        else
-            isDataReceived = false;
+/*        else
+            isDataReceived = false;*/
     }
 
     public static List<Vector3> ParseData(string dataString)
@@ -117,6 +117,11 @@ public class CameraController : MonoBehaviour
         return new Vector3(-c1, c2, c3); //change coordinate system
     }
 
+    Vector3 CalculateFocalLength(Vector3 A, Vector3 B)
+    {
+        return (A + B) / 2f;
+    }
+
     void Update()
     {
         Vector3 A = Points[0];
@@ -125,7 +130,7 @@ public class CameraController : MonoBehaviour
         Vector3 D = Points[3];
 
         //calculate focal length
-        Vector3 focalLength = (A + B) / 2f;
+        Vector3 focalLength = CalculateFocalLength(A, B);
 
         //calculate direction of the optical axis
         Vector3 opticalAxisDirection = CalculateOpticalAxisDirection(A, B, C, D);

@@ -16,6 +16,8 @@ public class Gameplay : MonoBehaviour
     public Transform targetObject7; // WhistlersMother
     public Transform targetObject8; // TheYoungLadiesOfAvignon
 
+    public GameObject UIPanels;
+
     private int numberDetectedPaintings = 0;
     public float maxAngle = 10f;
 
@@ -25,12 +27,55 @@ public class Gameplay : MonoBehaviour
 
     public TMP_Text paintingTitle;
 
+    float levelTimeLeft = 60f;
+    bool stopTimer = false;
+
+    public float GetLevelTimeLeft()
+    {
+        return levelTimeLeft;
+    }
+
+    public bool IsLevelStarted()
+    {
+        bool isLevelStarted = UIPanels.GetComponent<UI>().IsLevelStarted();
+        return isLevelStarted;
+    }
+
+    public bool IsFaceScriptConnected()
+    {
+        bool isFaceScriptConnected = GetComponent<CameraController>().IsDataReceived();
+        return isFaceScriptConnected;
+    }
+
+    public bool IsLevelOver()
+    {
+        if (IsLevelCompleted() || IsTimeOver())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsTimeOver()
+    {
+        if(levelTimeLeft <= 0)
+        {
+            return true;
+        }
+
+        return false;
+
+    }
+
     public bool IsLevelCompleted()
     {
-        if(numberDetectedPaintings == 8)
+        if(numberDetectedPaintings == 8 && levelTimeLeft > 0)
+        {
             return true;
-        else
-            return false;
+        }
+
+        return false;
     }
 
     public bool IsObjectDetected()
@@ -39,12 +84,14 @@ public class Gameplay : MonoBehaviour
         float angle = Vector3.Angle(directionToTarget, Camera.main.transform.forward);
 
         if (angle < maxAngle)
+        {
             return true;
-        else 
-            return false;
+        }
+
+        return false;
     }
 
-    public bool IsRequiredTime()
+    public bool IsDetectionRequiredTime()
     {
         if (Time.time - detectionStartTime >= requiredTime)
         {
@@ -79,35 +126,62 @@ public class Gameplay : MonoBehaviour
 
     void Update()
     {
-        SetCurrentTargetObject();
+        //connect python script
 
-        //Debug.DrawLine(transform.position, targetObject.position, Color.blue, 2.5f);
-        //Debug.DrawLine(Camera.main.transform.forward * 100, transform.position, Color.red, 2.5f);
+        //load level description
 
-        if (IsObjectDetected())
+        //start level
+        if(IsFaceScriptConnected() && IsLevelStarted())
         {
-            if (!timeConditionMet)
+            SetCurrentTargetObject();
+
+            //level timer
+            if(!stopTimer)
             {
-                detectionStartTime = Time.time;
-                timeConditionMet = true;
+                levelTimeLeft -= Time.deltaTime;
+                //Debug.Log(levelTimeLeft);
             }
 
-            if (IsRequiredTime())
+            if (IsTimeOver())
             {
-                if(!IsLevelCompleted())
+                //Debug.Log("Koniec czasu!");
+                levelTimeLeft = 0;
+                stopTimer = true;
+            }
+
+            //Debug.DrawLine(transform.position, targetObject.position, Color.blue, 2.5f);
+            //Debug.DrawLine(Camera.main.transform.forward * 100, transform.position, Color.red, 2.5f);
+
+            //check if painting is detected
+            if (IsObjectDetected())
+            {
+                if (!timeConditionMet)
                 {
-                    numberDetectedPaintings++;
-                    timeConditionMet = false;
+                    detectionStartTime = Time.time;
+                    timeConditionMet = true;
                 }
-                else
+
+                if (IsDetectionRequiredTime())
                 {
-                    Debug.Log("Ukoñczono level");
+                    if (!IsLevelCompleted())
+                    {
+                        numberDetectedPaintings++;
+                        timeConditionMet = false;
+                        //Debug.Log("Painting detected!");
+                    }
+                    if(IsLevelCompleted())
+                    {
+                        //Debug.Log("You won!");
+                        stopTimer = true;
+                    }
                 }
             }
+            else
+            {
+                timeConditionMet = false;
+            }
         }
-        else
-        {
-            timeConditionMet = false;
-        }
+
+        
     }
 }
