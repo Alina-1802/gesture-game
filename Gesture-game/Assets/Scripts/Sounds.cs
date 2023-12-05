@@ -5,6 +5,7 @@ using UnityEngine;
 public class Sounds : MonoBehaviour
 {
     public GameObject mainCamera;
+    public GameObject canvas;
 
     // Start is called before the first frame update
     void Start()
@@ -16,11 +17,12 @@ public class Sounds : MonoBehaviour
     void Update()
     {
         bool isObjectDetected = mainCamera.GetComponent<Gameplay>().IsObjectDetected();
+        bool isGameActive = canvas.GetComponent<UI>().IsGameActive();
         bool isRequiredTime = mainCamera.GetComponent<Gameplay>().IsDetectionRequiredTime();
 
-        if (isObjectDetected && isRequiredTime)
+        if (isObjectDetected && isGameActive && isRequiredTime)
         {
             GetComponentInChildren<AudioSource>().Play();
-        }
+        } 
     }
 }

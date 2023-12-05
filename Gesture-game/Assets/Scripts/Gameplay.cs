@@ -133,6 +133,7 @@ public class Gameplay : MonoBehaviour
         //start level
         if(IsFaceScriptConnected() && IsLevelStarted())
         {
+
             SetCurrentTargetObject();
 
             //level timer
@@ -181,7 +182,8 @@ public class Gameplay : MonoBehaviour
                 timeConditionMet = false;
             }
         }
-
+        else
+            Debug.Log("brak polaczenia lub gra sie nie rozpoczela");
         
     }
 }

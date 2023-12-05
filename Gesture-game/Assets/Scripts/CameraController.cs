@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
     TcpClient client;
     bool running;
 
-    bool isDataReceived = false;
+    bool isDataReceived;
 
     public bool IsDataReceived()
     {
@@ -30,11 +30,15 @@ public class CameraController : MonoBehaviour
         Vector3.zero
     };
 
+
     void Start()
     {
+        isDataReceived = false;
+
         ThreadStart ts = new ThreadStart(GetData);
         thread = new Thread(ts);
         thread.Start();
+
     }
 
     void GetData()
@@ -50,6 +54,7 @@ public class CameraController : MonoBehaviour
             Connection();
         }
         server.Stop();
+        Debug.Log("zakonczenie polaczenia");
     }
 
     void Connection()
@@ -62,17 +67,23 @@ public class CameraController : MonoBehaviour
 
         if (dataReceived != null && dataReceived != "")
         {
+            Debug.Log("otrzymano dane");
             Points = ParseData(dataReceived);
             nwStream.Write(buffer, 0, bytesRead);
 
             isDataReceived = true;
         }
-/*        else
-            isDataReceived = false;*/
+        else
+        {
+            isDataReceived = false;
+            Debug.Log("Dane puste lub brak");
+        }
+
     }
 
     public static List<Vector3> ParseData(string dataString)
     {
+        Debug.Log("Parsowanie");
         string[] stringArray = dataString.Split(',');
 
         List<Vector3> result = new List<Vector3>()
@@ -128,6 +139,8 @@ public class CameraController : MonoBehaviour
         Vector3 B = Points[1];
         Vector3 C = Points[2];
         Vector3 D = Points[3];
+
+        //Debug.Log(A);
 
         //calculate focal length
         Vector3 focalLength = CalculateFocalLength(A, B);

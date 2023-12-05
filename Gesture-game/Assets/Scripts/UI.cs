@@ -10,12 +10,21 @@ public class UI : MonoBehaviour
     public GameObject levelCompletionPanel;
     public GameObject gameplayDescriptionPanel;
     public GameObject paintingNamePanel;
+    public GameObject levelLostPanel;
 
     //gameplayDescriptionPanel time
     float descriptionPanelStartTime = 0;
     float descriptionPanelDurationTime = 10;
 
     public TMP_Text timerText;
+
+    bool isGameActive = false;
+
+
+    public bool IsGameActive()
+    { 
+        return isGameActive; 
+    }
 
     public bool IsLevelStarted()
     {
@@ -50,6 +59,7 @@ public class UI : MonoBehaviour
         //game started
         if (IsLevelStarted())
         {
+            isGameActive = true;
             gameplayDescriptionPanel.SetActive(false);
             paintingNamePanel.SetActive(true);
 
@@ -67,9 +77,13 @@ public class UI : MonoBehaviour
         {
             levelCompletionPanel.SetActive(true);
             paintingNamePanel.SetActive(false);
+            isGameActive = false;
         }
         else if(isTimeOver)
         {
+            levelLostPanel.SetActive(true);
+            paintingNamePanel.SetActive(false);
+            isGameActive = false;
             //handle lost game
             //Debug.Log("You lost!");
         }
