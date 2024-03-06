@@ -27,7 +27,7 @@ public class Gameplay : MonoBehaviour
 
     public TMP_Text paintingTitle;
 
-    float levelTimeLeft = 60f;
+    float levelTimeLeft = 90f;
     bool stopTimer = false;
 
     public float GetLevelTimeLeft()
@@ -93,12 +93,22 @@ public class Gameplay : MonoBehaviour
 
     public bool IsDetectionRequiredTime()
     {
-        if (Time.time - detectionStartTime >= requiredTime)
+        if (IsObjectDetected())
         {
-            return true;
+            if (Time.time - detectionStartTime >= requiredTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        return false;
+        else
+        {
+            detectionStartTime = Time.time;
+            return false;
+        }
     }
 
     void SetCurrentTargetObject()
@@ -119,21 +129,15 @@ public class Gameplay : MonoBehaviour
     void Start()
     {
         numberDetectedPaintings = 0;
-        paintingTitle.text = string.Empty;
         SetCurrentTargetObject();
         detectionStartTime = Time.time;
     }
 
     void Update()
     {
-        //connect python script
-
-        //load level description
-
         //start level
         if(IsFaceScriptConnected() && IsLevelStarted())
         {
-
             SetCurrentTargetObject();
 
             //level timer
@@ -182,8 +186,5 @@ public class Gameplay : MonoBehaviour
                 timeConditionMet = false;
             }
         }
-        else
-            Debug.Log("brak polaczenia lub gra sie nie rozpoczela");
-        
     }
 }

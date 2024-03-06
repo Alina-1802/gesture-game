@@ -7,6 +7,11 @@ public class Sounds : MonoBehaviour
     public GameObject mainCamera;
     public GameObject canvas;
 
+    bool isObjectDetected;
+    bool isGameActive;
+    bool isRequiredTime;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,11 +21,13 @@ public class Sounds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isObjectDetected = mainCamera.GetComponent<Gameplay>().IsObjectDetected();
-        bool isGameActive = canvas.GetComponent<UI>().IsGameActive();
-        bool isRequiredTime = mainCamera.GetComponent<Gameplay>().IsDetectionRequiredTime();
+        isObjectDetected = mainCamera.GetComponent<Gameplay>().IsObjectDetected();
+        isGameActive = canvas.GetComponent<UI>().IsGameActive();
+        isRequiredTime = mainCamera.GetComponent<Gameplay>().IsDetectionRequiredTime();
+        Debug.Log(isRequiredTime);
 
-        if (isObjectDetected && isGameActive && isRequiredTime)
+
+        if (isGameActive && isObjectDetected && isRequiredTime)
         {
             GetComponentInChildren<AudioSource>().Play();
         } 

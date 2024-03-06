@@ -54,7 +54,6 @@ public class CameraController : MonoBehaviour
             Connection();
         }
         server.Stop();
-        Debug.Log("zakonczenie polaczenia");
     }
 
     void Connection()
@@ -64,10 +63,8 @@ public class CameraController : MonoBehaviour
         int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
 
         string dataReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
         if (dataReceived != null && dataReceived != "")
         {
-            Debug.Log("otrzymano dane");
             Points = ParseData(dataReceived);
             nwStream.Write(buffer, 0, bytesRead);
 
@@ -76,34 +73,54 @@ public class CameraController : MonoBehaviour
         else
         {
             isDataReceived = false;
-            Debug.Log("Dane puste lub brak");
         }
 
     }
 
     public static List<Vector3> ParseData(string dataString)
     {
-        Debug.Log("Parsowanie");
         string[] stringArray = dataString.Split(',');
 
-        List<Vector3> result = new List<Vector3>()
+        List<Vector3> result = new List<Vector3>();
+
+        try
         {
-            new Vector3(float.Parse(stringArray[0]),
+            result.Add(new Vector3(float.Parse(stringArray[0]),
             float.Parse(stringArray[1]),
-            float.Parse(stringArray[2])),
+            float.Parse(stringArray[2])));
 
-            new Vector3(float.Parse(stringArray[3]),
+            result.Add(new Vector3(float.Parse(stringArray[3]),
             float.Parse(stringArray[4]),
-            float.Parse(stringArray[5])),
+            float.Parse(stringArray[5])));
 
-            new Vector3(float.Parse(stringArray[6]),
+            result.Add(new Vector3(float.Parse(stringArray[6]),
             float.Parse(stringArray[7]),
-            float.Parse(stringArray[8])),
+            float.Parse(stringArray[8])));
 
-            new Vector3(float.Parse(stringArray[9]),
+            result.Add(new Vector3(float.Parse(stringArray[9]),
             float.Parse(stringArray[10]),
-            float.Parse(stringArray[11]))
-        };
+            float.Parse(stringArray[11])));
+        }
+        catch
+        {
+            result.Add(new Vector3(float.Parse(stringArray[0].Replace('.', ',')), 
+            float.Parse(stringArray[1].Replace('.', ',')), 
+            float.Parse(stringArray[2].Replace('.', ','))));
+
+            result.Add(new Vector3(float.Parse(stringArray[3].Replace('.', ',')), 
+            float.Parse(stringArray[4].Replace('.', ',')), 
+            float.Parse(stringArray[5].Replace('.', ','))));
+
+            result.Add(new Vector3(float.Parse(stringArray[6].Replace('.', ',')), 
+            float.Parse(stringArray[7].Replace('.', ',')), 
+            float.Parse(stringArray[8].Replace('.', ','))));
+
+            result.Add(new Vector3(float.Parse(stringArray[9].Replace('.', ',')), 
+            float.Parse(stringArray[10].Replace('.', ',')), 
+            float.Parse(stringArray[11].Replace('.', ','))));
+        }
+
+
         return result;
     }
 
@@ -139,8 +156,6 @@ public class CameraController : MonoBehaviour
         Vector3 B = Points[1];
         Vector3 C = Points[2];
         Vector3 D = Points[3];
-
-        //Debug.Log(A);
 
         //calculate focal length
         Vector3 focalLength = CalculateFocalLength(A, B);
